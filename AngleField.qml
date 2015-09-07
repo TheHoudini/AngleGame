@@ -25,7 +25,6 @@ AngleFieldForm {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-           console.log( angleAi.estimateField(createMatrix(),firstPlayerId,secondPlayerId,houseData) )
         }
     }
 
@@ -36,7 +35,9 @@ AngleFieldForm {
         var data = [];
         data[firstPlayerId] = {ang : {x : 0 , y : 0} , mid : {x:3 , y : 3} }
         data[secondPlayerId] = {ang : {x : 7 , y : 7} , mid : {x:4 , y : 4} }
-        console.log('get : ' + angleAi.estimateField(createMatrix(),firstPlayerId,secondPlayerId,data)  )
+        print('OMG BEST MOVE CALCULATED :')
+        angleAi.printCord( angleAi.calculateBestMove( createMatrix() , firstPlayerId , secondPlayerId , data )  )
+        print('end')
     }
 
     function updateBackground()
