@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>MainForm.ui.qml</file>
+        <file>AngleFrame.qml</file>
+        <file>AngleFrameForm.ui.qml</file>
+        <file>AngleField.qml</file>
+        <file>AngleFieldForm.ui.qml</file>
+        <file>image/checker.png</file>
+        <file>AngleAI.qml</file>
+    </qresource>
+</RCC>
