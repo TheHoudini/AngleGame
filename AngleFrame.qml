@@ -20,13 +20,6 @@ AngleFrameForm {
     function setImage(img)
     {
         image.source = img
-    }
-    function hideImage()
-    {
-        image.visible = false
-    }
-    function showImage()
-    {
         image.visible = true
     }
 

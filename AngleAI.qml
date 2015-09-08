@@ -127,19 +127,22 @@ QtObject {
     function getPossibleMoves(field,x,y,resultArray,basic)
     {
 
-        basic = basic || {x : x , y : y}
+        resultArray = resultArray || [];
+        if(basic === undefined)
+        {
+            basic = {x : x , y : y}
+            mergeArray(resultArray,checkJoined(field,x,y,basic))
+        }
 
         // if arr is empty ,create array
 
-        resultArray = resultArray || [];
         var checked = resultArray.length
-        mergeArray(resultArray,checkJoined(field,x,y,basic))
         mergeArray(resultArray,checkJump(field,x,y,basic))
-/*
+
         for(var i = checked ; i < resultArray.length ; i++)
         {
             getPossibleMoves(field,resultArray[i].to.x,resultArray[i].to.y,resultArray,basic)
-        }*/
+        }
 
 
         return resultArray
@@ -235,6 +238,26 @@ QtObject {
             {
                 if(arr1[j].from.x === arr2[i].from.x && arr1[j].from.y === arr2[i].from.y
                         && arr1[j].to.x === arr2[i].to.x && arr1[j].to.y === arr2[i].to.y  )
+                {
+                    isNew = false
+                    break
+                }
+            }
+            if(isNew)
+                arr1.push(arr2[i])
+        }
+
+    }
+
+    function mergeArrayUnicalTo(arr1,arr2)
+    {
+
+        for(var i =0;i<arr2.length ; i++)
+        {
+            var isNew = true
+            for(var j = 0; j < arr1.length; j++)
+            {
+                if( arr1[j].to.x === arr2[i].to.x && arr1[j].to.y === arr2[i].to.y  )
                 {
                     isNew = false
                     break

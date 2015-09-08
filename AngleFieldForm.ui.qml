@@ -274,5 +274,15 @@ Item {
         }
 
     }
+
+    TextInput {
+        id: textInput1
+        x: -30
+        y: -75
+        width: 80
+        height: 20
+        text: qsTr("Text Input")
+        font.pixelSize: 12
+    }
 }
 
