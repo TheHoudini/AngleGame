@@ -7,11 +7,37 @@ QtObject {
 
     property double criteria_distance_to_house  : 100.0
     property int house_punishment_pieces_in_house_turn_grade : 3
-    property double criteria_peices_in_house  : 150000.0
+    property double criteria_peices_in_house  : 1500000000000000000000000000000.0
     property double criteria_house_punishment : 0.000000003
 
 
+    function getEmptySlotInHouse(playerId,field,houseData)
+    {
+        var houseItem = houseData[playerId]
+        var firstPoint
+        var secondPoint
+        if(houseItem.ang.x > houseItem.mid.x)
+        {
+            firstPoint = houseItem.mid
+            secondPoint = houseItem.ang
+        }else{
+            firstPoint = houseItem.ang
+            secondPoint = houseItem.mid
+        }
+        var result
+        for(var i = 0 ; i< field.length ; i++)
+        {
+            for(var j = 0 ; j < field.length ; j++)
+            {
+                if(field[i][j] === playerId)
+                {
+                    result = {x: i , y : j}
+                }
+            }
+        }
+        return result
 
+    }
 
 
     function calculateBestMove(field,playerId,opponentId,houseData)
@@ -19,12 +45,13 @@ QtObject {
         var moves = getAllPossibleMoves(field,playerId)
         var topBorder = +10000000000000
         var alpha =     -10000000000000
-        console.log('FIELD BEFORE : ' )
-        printField(field)
         var bestMove = {}
+
+
         for(var i = 0 ; i < moves.length ; i++)
         {
             var betta = estimateMoveValue(field,moves[i],playerId,opponentId,houseData)
+
             if(betta > alpha)
             {
                 alpha = betta
@@ -33,9 +60,6 @@ QtObject {
             if(betta > topBorder)
                 break
         }
-
-        console.log('FIELD AFTER : ' )
-        printField(field)
         return bestMove
     }
 
@@ -44,18 +68,17 @@ QtObject {
     {
         if(depth === undefined)
         {
-            depth = 3
+            depth = 1
             alpha =  -10000000000000
             betta =  +10000000000000
         }
         applyMoveToField(move,field)
-        print('FIRST APPLY ' )
-        printCord(move)
-        printField(field)
-
         if(depth === 0 )
         {
-            return estimateField(field,playerId,opponentId,houseData)
+
+            var value = estimateField(field,playerId,opponentId,houseData)
+            resetMoveFromField(move,field)
+            return value
         }
 
 
@@ -66,6 +89,7 @@ QtObject {
             var gamma = estimateMoveValue(field,moves[i],playerId,opponentId,houseData,depth-1,alpha,betta)
             if(gamma > alpha)
                 alpha = gamma
+
         }
 
         resetMoveFromField(move,field)
@@ -79,6 +103,39 @@ QtObject {
         {
             print(field[i])
         }
+    }
+
+    function piecesOutsideHouse(playerId,opponentId,field,houseData)
+    {
+        var houseItem = houseData[opponentId]
+        var firstPoint
+        var secondPoint
+        if(houseItem.ang.x > houseItem.mid.x)
+        {
+            firstPoint = houseItem.mid
+            secondPoint = houseItem.ang
+        }else{
+            firstPoint = houseItem.ang
+            secondPoint = houseItem.mid
+        }
+        var result = []
+        for(var i = 0 ; i< field.length ; i++)
+        {
+            for(var j = 0 ; j < field.length ; j++)
+            {
+                if(field[i][j] !== playerId)
+                {
+                    continue
+                }
+
+                if( !(firstPoint.x <= i && firstPoint.y <= j && secondPoint.x >= i && secondPoint.y >= j) )
+                {
+                    result.push( {x:i , y : j} )
+                }
+            }
+        }
+        return result
+
     }
 
     function estimateField(field,playerId,opponentId,houseData)
@@ -101,7 +158,14 @@ QtObject {
             {
                 if(field[i][j] === playerId)
                 {
-                    houseRange -= distanceToHouse(i,j, houseData[opponentId].ang );
+                    if( piecesOutsideHouse(playerId,opponentId,field,houseData).length <= 2)
+                    {
+                        houseRange -= distanceToHouse(i,j, getEmptySlotInHouse(playerId,field,houseData) )
+                    }
+                    else
+                        houseRange -= distanceToHouse(i,j, houseData[opponentId].ang );
+
+
                     if(isInHouse(i,j,opponentId,houseData))
                     {
                         piecesInOpponentHouse++
@@ -121,7 +185,7 @@ QtObject {
 
         // check win
         if(piecesInOpponentHouse === (Math.pow(field.length/2,2)) )
-            piecesInOpponentHouse += 1000000000
+            piecesInOpponentHouse += 10000000000000000
 
         value += houseRange * criteria_distance_to_house
         grade = house_punishment_pieces_in_house_turn_grade
