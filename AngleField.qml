@@ -18,7 +18,8 @@ AngleFieldForm {
     property int tempItemId : -1
     property variant currentItem : 0
 
-    property int    currentPlayerId : firstPlayerId
+    property int    currentPlayerId : secondPlayerId
+
 
 
     property variant houseData : []
@@ -27,11 +28,21 @@ AngleFieldForm {
         id : angleAi
     }
 
+
+    signal stepFinished
+
+    onStepFinished: {
+        currentPlayerId = currentPlayerId == firstPlayerId ? secondPlayerId : firstPlayerId
+        if(currentPlayerId < 0)
+            doBestMove()
+
+    }
+
     MouseArea {
         anchors.fill: parent
         onClicked: {
-           // if(currentPlayerId < 0 )
-           //     return
+            if(currentPlayerId < 0 )
+                return
 
             var i = Math.floor( mouseX / getFrame(0,0).width  )
             var j = Math.floor( mouseY / getFrame(0,0).height )
@@ -50,6 +61,7 @@ AngleFieldForm {
                 removePossibleMoves(currentItem.x , currentItem.y)
                 move({from:currentItem , to : {x:i , y : j} })
                 currentItem = 0
+                stepFinished()
             }
 
 
@@ -66,8 +78,15 @@ AngleFieldForm {
         data[secondPlayerId] = {ang : {x : 7 , y : 7} , mid : {x:4 , y : 4} }
         houseData = data
 
+       // doBestMove()
+    }
 
-        move( angleAi.calculateBestMove( createMatrix() , firstPlayerId , secondPlayerId , houseData )  )
+
+    function doBestMove()
+    {
+        var opponent = currentPlayerId === secondPlayerId ? firstPlayerId : secondPlayerId
+        move(angleAi.calculateBestMove(createMatrix(),currentPlayerId , opponent,houseData     ))
+        stepFinished()
     }
 
 
@@ -75,8 +94,9 @@ AngleFieldForm {
         var moves = angleAi.getPossibleMoves(createMatrix(),x,y)
         for(var i = 0 ; i < moves.length ; i++)
         {
+
             var item = getFrame( moves[i].to.x , moves[i].to.y )
-            item.setBackground( (x+y) % 2 ? fieldSecondColor : fieldFirstColor )
+            item.setBackground( (moves[i].to.x +moves[i].to.y) % 2 ? fieldFirstColor : fieldSecondColor )
             item.ownerId = 0
             item.setImage('')
 

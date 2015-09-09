@@ -49,10 +49,6 @@ QtObject {
             betta =  +10000000000000
         }
         applyMoveToField(move,field)
-        print('FIRST APPLY ' )
-        printCord(move)
-        printField(field)
-
         if(depth === 0 )
         {
             return estimateField(field,playerId,opponentId,houseData)
