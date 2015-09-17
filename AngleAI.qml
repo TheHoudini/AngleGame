@@ -50,7 +50,6 @@ QtObject {
         var bestMove = {}
 
         var pieces = piecesOutsideHouse(playerId,opponentId,field,houseData)
-
         for(var i = 0 ; i < moves.length ; i++)
         {
 
@@ -82,7 +81,6 @@ QtObject {
             if(betta > topBorder)
                 break
         }
-        lastStep = bestMove.from
         return bestMove
     }
 
@@ -223,6 +221,7 @@ QtObject {
         return value;
 
     }
+
 
 
 
@@ -414,6 +413,34 @@ QtObject {
     function distance(i,j,k,l)
     {
         return Math.sqrt( Math.pow(k - i, 2) + Math.pow(l - j, 2)  );
+    }
+
+    function playerPiecesInHouse(playerId,housePlayerId,field,houseData)
+    {
+        var firstPoint
+        var secondPoint
+        if(playerId === firstPlayerId)
+        {
+            firstPoint = houseData[housePlayerId].ang
+            secondPoint = houseData[housePlayerId].mid
+        }else
+        {
+            firstPoint = houseData[housePlayerId].mid
+            secondPoint = houseData[housePlayerId].ang
+        }
+
+        var count = 0
+        for(var i = firstPoint.x ; i <= secondPoint.x ; i++)
+        {
+            for(var j = firstPoint.y ; j <= secondPoint.y ; j++)
+            {
+                if(field[i][j] === playerId)
+                        count++
+            }
+
+        }
+        console.log('return :' + count)
+        return count
     }
 
 }

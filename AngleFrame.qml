@@ -2,13 +2,11 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 
 AngleFrameForm {
-    Layout.minimumHeight: 50
-    Layout.minimumWidth:  50
+    Layout.minimumHeight: 25
+    Layout.minimumWidth:  25
     Layout.fillHeight: true
     Layout.fillWidth: true
 
-  //  image.sourceSize.width: 200
-//    image.sourceSize.height: 200
 
     property bool isEmpty : true
     property int ownerId : 0
@@ -21,6 +19,11 @@ AngleFrameForm {
     {
         image.source = img
         image.visible = true
+    }
+
+    function setOpacity(op)
+    {
+        imgOpacity = op
     }
 
 

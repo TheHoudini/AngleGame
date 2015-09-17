@@ -12,9 +12,9 @@ Item {
         anchors.rightMargin: 0
         anchors.bottomMargin: 0
         rows: 0
-        rowSpacing: 2
+        rowSpacing: 0
         columns: 8
-        columnSpacing: 2
+        columnSpacing: 0
         anchors.fill: parent
 
         AngleFrame {
@@ -273,16 +273,6 @@ Item {
             id: angleFrame64
         }
 
-    }
-
-    TextInput {
-        id: textInput1
-        x: -30
-        y: -75
-        width: 80
-        height: 20
-        text: qsTr("Text Input")
-        font.pixelSize: 12
     }
 }
 

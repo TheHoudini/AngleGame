@@ -12,13 +12,18 @@ AngleFieldForm {
     property int    firstPlayerId : -2
 
     property string fieldSecondPlayerColor : "#ff0000"
-    property string fieldSecondPlayerImage : "qrc:/image/checker.png"
+    property string fieldSecondPlayerImage : "qrc:/image/blackchecker.png"
     property int    secondPlayerId : 2
 
     property int tempItemId : -1
     property variant currentItem : 0
 
-    property int    currentPlayerId : secondPlayerId
+    property int    currentPlayerId : firstPlayerId
+
+
+   property variant matrix : []
+
+    property alias ai : angleAi
 
 
 
@@ -32,7 +37,12 @@ AngleFieldForm {
     signal stepFinished
 
     onStepFinished: {
-        currentPlayerId = currentPlayerId == firstPlayerId ? secondPlayerId : firstPlayerId
+        updateMatrix()
+
+        if(gameFinished() > 0)
+            return
+
+        currentPlayerId = ( currentPlayerId == firstPlayerId ? secondPlayerId : firstPlayerId)
         if(currentPlayerId < 0)
             doBestMove()
 
@@ -42,13 +52,12 @@ AngleFieldForm {
         anchors.fill: parent
         onClicked: {
             if(currentPlayerId < 0 )
-                return
+                doBestMove()
 
             var i = Math.floor( mouseX / getFrame(0,0).width  )
             var j = Math.floor( mouseY / getFrame(0,0).height )
 
             var item = getFrame(i,j)
-
             if(item.ownerId === currentPlayerId)
             {
                 removePossibleMoves(currentItem.x , currentItem.y)
@@ -72,11 +81,6 @@ AngleFieldForm {
 
     Component.onCompleted: {
         updateBackground()
-        resetFigure()
-        var data = [];
-        data[firstPlayerId] = {ang : {x : 0 , y : 0} , mid : {x:3 , y : 3} }
-        data[secondPlayerId] = {ang : {x : 7 , y : 7} , mid : {x:4 , y : 4} }
-        houseData = data
 
        // doBestMove()
     }
@@ -85,13 +89,14 @@ AngleFieldForm {
     function doBestMove()
     {
         var opponent = currentPlayerId === secondPlayerId ? firstPlayerId : secondPlayerId
-        move(angleAi.calculateBestMove(createMatrix(),currentPlayerId , opponent,houseData     ))
+
+        move(angleAi.calculateBestMove(matrix,currentPlayerId , opponent,houseData     ))
         stepFinished()
     }
 
 
     function removePossibleMoves(x,y){
-        var moves = angleAi.getPossibleMoves(createMatrix(),x,y)
+        var moves = angleAi.getPossibleMoves(matrix,x,y)
         for(var i = 0 ; i < moves.length ; i++)
         {
 
@@ -99,6 +104,7 @@ AngleFieldForm {
             item.setBackground( (moves[i].to.x +moves[i].to.y) % 2 ? fieldFirstColor : fieldSecondColor )
             item.ownerId = 0
             item.setImage('')
+            item.setOpacity(0.9)
 
 
         }
@@ -106,11 +112,12 @@ AngleFieldForm {
 
     function drawPossibleMoves(x,y)
     {
-        var moves = angleAi.getPossibleMoves(createMatrix(),x,y)
+        var moves = angleAi.getPossibleMoves(matrix,x,y)
         for(var i = 0 ; i < moves.length ; i++)
         {
             var item = getFrame( moves[i].to.x , moves[i].to.y )
-            item.setBackground('#E51BE5')
+            item.setImage( currentPlayerId == firstPlayerId ? fieldFirstPlayerImage : fieldSecondPlayerImage)
+            item.setOpacity(0.1)
             item.ownerId = tempItemId
 
         }
@@ -128,7 +135,7 @@ AngleFieldForm {
 
         point = cord.to
         item = getFrame(point.x,point.y)
-        item.setBackground(currentPlayerId == firstPlayerId ? fieldFirstPlayerColor : fieldSecondPlayerColor)
+        //item.setBackground(currentPlayerId == firstPlayerId ? fieldFirstPlayerColor : fieldSecondPlayerColor)
         item.setImage( currentPlayerId == firstPlayerId ? fieldFirstPlayerImage : fieldSecondPlayerImage)
         item.ownerId = currentPlayerId
     }
@@ -154,14 +161,14 @@ AngleFieldForm {
                var item = layout.children[i*8+j]
                if(i < 4 && j < 4)
                {
-                    item.setBackground(fieldFirstPlayerColor)
+                    //item.setBackground(fieldFirstPlayerColor)
                     item.setImage(fieldFirstPlayerImage)
                     item.isEmpty = false
                     item.ownerId = firstPlayerId
                }else if(i>=4 && j >= 4 )
                {
 
-                   item.setBackground(fieldSecondPlayerColor)
+                   //item.setBackground(fieldSecondPlayerColor)
                    item.setImage(fieldSecondPlayerImage)
                    item.isEmpty = false
                    item.ownerId = secondPlayerId
@@ -171,6 +178,18 @@ AngleFieldForm {
         }
     }
 
+    function clearField(){
+        for(var i = 0 ; i < 8 ; i++)
+        {
+           for(var j = 0 ; j < 8 ; j++)
+           {
+               var item = layout.children[i*8+j]
+               item.setImage('')
+               item.ownerId = 0
+           }
+        }
+
+    }
 
     function getFrame(x,y)
     {
@@ -179,9 +198,42 @@ AngleFieldForm {
     }
 
 
+    function gameFinished(){
+        var mat = matrix
+
+        var fpPieces = 0
+        var spPieces = 0
 
 
-    function createMatrix()
+        for(var i = 0 ; i < mat.length ; i++)
+        {
+             for(var j = 0 ; j < mat.length ; j ++)
+             {
+                var frame = getFrame(i,j)
+                if(frame.ownerId === firstPlayerId && i >=4 && j>=4)
+                {
+                    fpPieces++
+                }else if(frame.ownerId === secondPlayerId && i<4 && j<4)
+                {
+                    spPieces++
+                }
+
+             }
+        }
+
+        if(fpPieces === 16 && spPieces === 16)
+            return 3
+        else if(fpPieces === 16)
+            return 1
+        else if(spPieces === 16)
+            return 2
+        else
+            return 0
+
+    }
+
+
+    function updateMatrix()
     {
         var matr = [];
         for(var i = 0 ; i < 8 ; i++)
@@ -196,7 +248,66 @@ AngleFieldForm {
                     matr[i][j] = 0
             }
         }
-        return matr
+        matrix =  matr
+    }
+
+
+
+
+    function startNewGame()
+    {
+        resetFigure()
+        currentPlayerId = firstPlayerId
+
+        var data = [];
+        data[firstPlayerId] = {ang : {x : 0 , y : 0} , mid : {x:3 , y : 3} }
+        data[secondPlayerId] = {ang : {x : 7 , y : 7} , mid : {x:4 , y : 4} }
+        houseData = data
+
+        updateMatrix()
+        if( currentPlayerId < 0)
+            doBestMove()
+    }
+
+
+
+    function loadMatrix(matrix){
+        for(var i = 0 ; i < matrix.length ; i++ )
+        {
+            for(var j = 0 ; j < matrix.length ; j++)
+            {
+                var value = matrix[i][j]
+                var item  = getFrame(i,j)
+                item.ownerId = value
+                if( value === firstPlayerId)
+                {
+                     item.setImage(fieldFirstPlayerImage)
+                     item.isEmpty = false
+                }else if(value === secondPlayerId )
+                {
+                    item.setImage(fieldSecondPlayerImage)
+                    item.isEmpty = false
+                }else
+                {
+                    item.isEmpty = true
+                }
+
+            }
+
+
+        }
+        updateMatrix()
+
+
+        var data = [];
+        data[firstPlayerId] = {ang : {x : 0 , y : 0} , mid : {x:3 , y : 3} }
+        data[secondPlayerId] = {ang : {x : 7 , y : 7} , mid : {x:4 , y : 4} }
+        houseData = data
+
+        updateMatrix()
+
+        if( currentPlayerId < 0)
+            doBestMove()
     }
 
 

@@ -1,9 +1,9 @@
 TEMPLATE = app
 
-QT += qml quick widgets
+QT += qml quick
+CONFIG += c++11
 
-SOURCES += main.cpp \
-    datamanager.cpp
+SOURCES += main.cpp
 
 RESOURCES += qml.qrc
 
@@ -13,5 +13,3 @@ QML_IMPORT_PATH =
 # Default rules for deployment.
 include(deployment.pri)
 
-HEADERS += \
-    datamanager.h

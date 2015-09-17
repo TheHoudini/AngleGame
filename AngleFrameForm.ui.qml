@@ -5,10 +5,12 @@ Item {
 
     property alias image : img
     property alias rect : rectangle
+    property double imgOpacity : 0.9
 
     Rectangle {
         id: rectangle
         color: "#ffffff"
+        visible: true
         opacity: 0.5
         anchors.fill: parent
     }
@@ -17,12 +19,13 @@ Item {
         id: img
         x: 9
         y: 4
+        opacity: imgOpacity
         fillMode: Image.PreserveAspectFit
         visible: false
-        anchors.rightMargin: 9
-        anchors.leftMargin: 9
-        anchors.bottomMargin: 4
-        anchors.topMargin: 4
+        anchors.rightMargin: 4
+        anchors.leftMargin: 4
+        anchors.bottomMargin: 1
+        anchors.topMargin: 1
         sourceSize.height: 0
         sourceSize.width: 0
         anchors.fill: parent

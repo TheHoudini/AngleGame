@@ -8,5 +8,24 @@
         <file>AngleFieldForm.ui.qml</file>
         <file>image/checker.png</file>
         <file>AngleAI.qml</file>
+        <file>image/background.png</file>
+        <file>main.cpp</file>
+        <file>WoodenUi/WoodenButton.qml</file>
+        <file>WoodenUi/WoodenButtonForm.ui.qml</file>
+        <file>WoodenUi/images/button_down.png</file>
+        <file>WoodenUi/images/button_hover.png</file>
+        <file>WoodenUi/images/button_up.png</file>
+        <file>WoodenText.qml</file>
+        <file>WoodenTextForm.ui.qml</file>
+        <file>WoodenUi/images/dark_wood.jpg</file>
+        <file>WoodenUi/images/logo.gif</file>
+        <file>WoodenUi/WoodenRadioButton.qml</file>
+        <file>WoodenUi/WoodenRadioButtonForm.ui.qml</file>
+        <file>WoodenUi/WoodenCircle.qml</file>
+        <file>WoodenUi/images/arrowhead.png</file>
+        <file>image/blackchecker.png</file>
+        <file>WoodenUi/images/text_field.png</file>
+        <file>WoodenTextField.qml</file>
+        <file>WoodenTextFieldForm.ui.qml</file>
     </qresource>
 </RCC>
