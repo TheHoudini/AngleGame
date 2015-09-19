@@ -906,11 +906,6 @@ Item {
             }
 
             PropertyChanges {
-                target: settingsHSInput
-                inputText: "40"
-            }
-
-            PropertyChanges {
                 target: settingsMusicItem
                 visible: false
             }

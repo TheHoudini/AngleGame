@@ -27,17 +27,18 @@ QtObject {
             firstPoint = houseItem.ang
             secondPoint = houseItem.mid
         }
-
+        var arr = []
         for(var i = firstPoint.y ; i<= secondPoint.y ; i++)
         {
             for(var j = firstPoint.x ; j <= secondPoint.x ; j++)
             {
                 if(field[i][j] === 0)
                 {
-                    return {x: i , y  : j}
+                    arr.push({x: i , y  : j})
                 }
             }
         }
+        return arr
 
     }
 
@@ -50,6 +51,7 @@ QtObject {
         var bestMove = {}
 
         var pieces = piecesOutsideHouse(playerId,opponentId,field,houseData)
+        var slots = getEmptySlotInHouse(opponentId,field,houseData)
         for(var i = 0 ; i < moves.length ; i++)
         {
 
@@ -62,10 +64,22 @@ QtObject {
                     var piece = pieces[j]
                     if(move.from.x === piece.x && move.from.y === piece.y)
                         isValidMove = true
+
                 }
                 if(!isValidMove)
                     continue
+                else
+                    for(var z = 0 ; z < slots.length ; z++)
+                    {
+                        if(move.to.x === slots[z].x && move.to.y === slots[z].y)
+                        {
+                            lastStep = move.from
+                            return move
+                        }
+                    }
             }
+
+
 
 
             var betta = estimateMoveValue(field,moves[i],playerId,opponentId,houseData)
@@ -81,6 +95,7 @@ QtObject {
             if(betta > topBorder)
                 break
         }
+        lastStep = bestMove.from
         return bestMove
     }
 
@@ -181,7 +196,7 @@ QtObject {
                 {
                     if( piecesOutsideHouse(playerId,opponentId,field,houseData).length <= 2)
                     {
-                        var point = getEmptySlotInHouse(opponentId,field,houseData)
+                        var point = getEmptySlotInHouse(opponentId,field,houseData)[0]
                         if(point === undefined)
                             return 100000000000000000000000000000000
                         houseRange -= distanceToHouse(i,j,point  )

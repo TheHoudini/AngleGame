@@ -150,7 +150,7 @@ int DataManager::mpStep() const
 
 int DataManager::maxStepCount() const
 {
-    return 80;
+    return m_maxStepCount;
 }
 
 
